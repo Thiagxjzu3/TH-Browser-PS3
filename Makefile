@@ -8,6 +8,9 @@ OFILES := source/main.o
 CFLAGS := -I$(PS3DEV)/ppu/include -std=gnu99
 LDFLAGS :=
 
+# Force the PlayStation 3 linker.
+LD := ppu-gcc
+
 BUILDDIR := build
 PKGFILES := data
 
