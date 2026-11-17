@@ -3,12 +3,13 @@ TARGET := thbrowser
 APPID := THBR00001
 TITLE := TH Browser
 
-OFILES := source/main.o
+OFILES := source/main.o source/rsxutil.o
 
-CFLAGS := -I$(PS3DEV)/ppu/include -std=gnu99
+CFLAGS := -Iinclude -I$(PS3DEV)/ppu/include -std=gnu99
 LDFLAGS :=
 
-# Force the PlayStation 3 linker.
+LIBS := -lgcm_sys -lrsx -lsysutil -llv2
+
 LD := ppu-gcc
 
 BUILDDIR := build
