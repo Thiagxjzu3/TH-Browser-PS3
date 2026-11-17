@@ -8,7 +8,7 @@ OFILES := source/main.o source/rsxutil.o
 CFLAGS := -Iinclude -I$(PS3DEV)/ppu/include -std=gnu99
 LDFLAGS :=
 
-LIBS := -lgcm_sys -lrsx -lsysutil -llv2
+LIBS := -lgcm_sys -lrsx -lsysutil -lio -llv2
 
 LD := ppu-gcc
 
