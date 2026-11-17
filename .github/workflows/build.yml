@@ -14,19 +14,63 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install dependencies
+      - name: Install host dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y \
             build-essential \
+            curl \
             git \
             make \
             python3 \
-            wget \
-            libelf-dev
+            libelf-dev \
+            zlib1g-dev
 
-      - name: Check PS3DEV environment
+      - name: Download official PS3DEV toolchain
         run: |
-          echo "Checking PS3 development tools..."
-          command -v ppu-gcc || true
-          echo "PS3DEV setup will be added next."
+          set -euo pipefail
+
+          RELEASE="nightly-2026-11-16"
+          ARCHIVE="ps3dev-linux-X64.tar.gz"
+          URL="https://github.com/ps3dev/ps3dev/releases/download/${RELEASE}/${ARCHIVE}"
+          EXPECTED_SHA256="1d4a518cd0afc05dd75246d71ca016d8f8aa918ba3ec452ba92b865137afe054"
+
+          curl --fail --location --retry 3 --retry-delay 3 \
+            "$URL" --output "$RUNNER_TEMP/$ARCHIVE"
+
+          echo "$EXPECTED_SHA256  $RUNNER_TEMP/$ARCHIVE" | sha256sum --check -
+
+          mkdir -p "$RUNNER_TEMP/ps3dev-install"
+          tar -xzf "$RUNNER_TEMP/$ARCHIVE" -C "$RUNNER_TEMP/ps3dev-install"
+
+          test -x "$RUNNER_TEMP/ps3dev-install/ps3dev/ppu/bin/ppu-gcc"
+          test -x "$RUNNER_TEMP/ps3dev-install/ps3dev/spu/bin/spu-gcc"
+
+          echo "PS3DEV=$RUNNER_TEMP/ps3dev-install/ps3dev" >> "$GITHUB_ENV"
+          echo "PSL1GHT=$RUNNER_TEMP/ps3dev-install/ps3dev" >> "$GITHUB_ENV"
+          echo "$RUNNER_TEMP/ps3dev-install/ps3dev/bin" >> "$GITHUB_PATH"
+          echo "$RUNNER_TEMP/ps3dev-install/ps3dev/ppu/bin" >> "$GITHUB_PATH"
+          echo "$RUNNER_TEMP/ps3dev-install/ps3dev/spu/bin" >> "$GITHUB_PATH"
+
+      - name: Verify PS3 development environment
+        run: |
+          set -euo pipefail
+
+          echo "PS3DEV=$PS3DEV"
+          echo "PSL1GHT=$PSL1GHT"
+
+          command -v ppu-gcc
+          command -v spu-gcc
+
+          ppu-gcc --version
+          spu-gcc --version
+
+          test -d "$PS3DEV/ppu"
+          test -d "$PS3DEV/spu"
+
+          echo "PS3DEV and compiler checks passed."
+
+      - name: Project build placeholder
+        run: |
+          echo "PS3 toolchain is ready."
+          echo "TH Browser source compilation will be enabled after the project Makefile is implemented."
