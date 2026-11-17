@@ -71,13 +71,43 @@ jobs:
             -print
 
           test -f "$PS3DEV/ppu/include/jpgdec/jpgdec.h"
+          test -f "$PS3DEV/ppu/lib/libjpgdec.a"
 
-      - name: Compile TH Browser
+      - name: Verify PKG tools
+        run: |
+          set -euo pipefail
+
+          command -v sprxlinker
+          command -v make_self
+          command -v make_self_npdrm
+          command -v sfo
+          command -v pkg
+          command -v package_finalize
+
+          test -f "$PS3DEV/bin/ICON0.PNG"
+          test -f "$PS3DEV/bin/sfo.xml"
+
+      - name: Build TH Browser PKG
         run: |
           set -euo pipefail
 
           make clean
-          make thbrowser.elf
-          test -s thbrowser.elf
+          make pkg
 
-          echo "TH Browser PPU compilation successful."
+          test -s thbrowser.elf
+          test -s thbrowser.self
+          test -s thbrowser.pkg
+          test -s thbrowser.gnpdrm.pkg
+
+          echo "TH Browser PKG build successful."
+
+      - name: Upload TH Browser packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: TH-Browser-PS3-PKG
+          path: |
+            thbrowser.pkg
+            thbrowser.gnpdrm.pkg
+            thbrowser.elf
+          if-no-files-found: error
+          retention-days: 14
