@@ -56,21 +56,18 @@ jobs:
         run: |
           set -euo pipefail
 
-          echo "PS3DEV=$PS3DEV"
-          echo "PSL1GHT=$PSL1GHT"
-
           command -v ppu-gcc
           command -v spu-gcc
 
           ppu-gcc --version
           spu-gcc --version
 
-          test -d "$PS3DEV/ppu"
-          test -d "$PS3DEV/spu"
-
-          echo "PS3DEV and compiler checks passed."
-
-      - name: Project build placeholder
+      - name: Compile TH Browser
         run: |
-          echo "PS3 toolchain is ready."
-          echo "TH Browser source compilation will be enabled after the project Makefile is implemented."
+          set -euo pipefail
+
+          make clean
+          make thbrowser.elf
+          test -s thbrowser.elf
+
+          echo "TH Browser PPU compilation successful."
