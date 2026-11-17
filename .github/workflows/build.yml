@@ -61,6 +61,16 @@ jobs:
 
           ppu-gcc --version
           spu-gcc --version
+        
+- name: Verify JPEG decoder
+        run: |
+          set -euo pipefail
+
+          find "$PS3DEV" -type f \
+            \( -name "jpgdec.h" -o -name "libjpgdec.a" \) \
+            -print
+
+          test -f "$PS3DEV/ppu/include/jpgdec/jpgdec.h"
 
       - name: Compile TH Browser
         run: |
