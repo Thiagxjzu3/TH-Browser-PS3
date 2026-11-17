@@ -61,8 +61,8 @@ jobs:
 
           ppu-gcc --version
           spu-gcc --version
-        
-- name: Verify JPEG decoder
+
+      - name: Verify JPEG decoder
         run: |
           set -euo pipefail
 
